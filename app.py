@@ -232,3 +232,4 @@ elif st.session_state.menu_pilihan == "🏃 Aktivitas":
         st.session_state.exercise.append({"act": pilihan_ex, "burn": burn})
         st.session_state.menu_pilihan = "🏠 Dashboard" 
         st.rerun()
+
