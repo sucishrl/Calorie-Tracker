@@ -3,6 +3,7 @@ import pandas as pd
 
 st.set_page_config(page_title="Calorie Tracker", layout="wide", page_icon="🎀")
 
+# Inisialisasi session state agar data tidak hilang saat pindah halaman
 if "diary" not in st.session_state: st.session_state.diary = []
 if "exercise" not in st.session_state: st.session_state.exercise = []
 if "menu_pilihan" not in st.session_state: st.session_state.menu_pilihan = "🏠 Dashboard"
@@ -15,28 +16,29 @@ st.markdown("""
     background-attachment: fixed;
 }
 
-/* 1. PERBAIKAN SEMUA KOTAK INPUT (SELECTBOX & NUMBER INPUT) AGAR PUTIH BERSIH */
-/* Mengatur kotak seleksi dan kotak angka */
+/* 1. PERBAIKAN SEMUA KOTAK INPUT (BIAR PUTIH & TEKS HITAM JELAS) */
 div[data-baseweb="select"] > div, 
-div[data-testid="stNumberInput"] div[data-baseweb="input"] {
+div[data-testid="stNumberInput"] div[data-baseweb="input"],
+div[data-baseweb="base-input"] {
     background-color: #ffffff !important;
-    border: 1px solid #ffb6c1 !important;
+    border: 2px solid #ffb6c1 !important;
+    border-radius: 10px;
 }
 
-/* Mengatur warna teks di dalam kotak agar hitam pekat */
 div[data-baseweb="select"] div, 
 div[data-testid="stNumberInput"] input {
     color: #000000 !important;
     -webkit-text-fill-color: #000000 !important;
+    font-weight: 500;
 }
 
-/* Mengatur warna ikon plus/minus pada input angka */
+/* Mengatur warna tombol +/- pada input angka */
 div[data-testid="stNumberInput"] button {
     background-color: #ffffff !important;
     color: #ff4d94 !important;
 }
 
-/* 2. PERBAIKAN PANAH SIDEBAR & IKON */
+/* 2. PERBAIKAN PANAH SIDEBAR (BIAR PINK CERAH) */
 button[aria-label="Open sidebar"] svg, 
 button[aria-label="Close sidebar"] svg,
 button[data-testid="sidebar-button"] svg {
@@ -76,74 +78,76 @@ section[data-testid="stSidebar"] label, section[data-testid="stSidebar"] p {
 </style>
 """, unsafe_allow_html=True)
 
+# DAFTAR MAKANAN LENGKAP
 foods = [
-    {"name": "Nasi Putih", "cal": 175, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Karbohidrat"},
-    {"name": "Nasi Merah", "cal": 165, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Karbohidrat"},
-    {"name": "Nasi Kuning", "cal": 180, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Karbohidrat"},
-    {"name": "Kentang Rebus", "cal": 130, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Karbohidrat"},
-    {"name": "Ubi Rebus", "cal": 160, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Karbohidrat"},
-    {"name": "Roti Putih", "cal": 80, "unit": "Lembar", "type": "int", "cat": "Makanan", "category": "Karbohidrat"},
-    {"name": "Roti Gandum", "cal": 90, "unit": "Lembar", "type": "int", "cat": "Makanan", "category": "Karbohidrat"},
-    {"name": "Ayam Goreng", "cal": 250, "unit": "Potong", "type": "decimal", "cat": "Makanan", "category": "Protein Hewani"},
-    {"name": "Ayam Panggang", "cal": 190, "unit": "Potong", "type": "decimal", "cat": "Makanan", "category": "Protein Hewani"},
-    {"name": "Daging Sapi", "cal": 270, "unit": "Potong", "type": "decimal", "cat": "Makanan", "category": "Protein Hewani"},
-    {"name": "Ikan Goreng", "cal": 220, "unit": "Potong", "type": "decimal", "cat": "Makanan", "category": "Protein Hewani"},
-    {"name": "Ikan Tuna", "cal": 180, "unit": "Potong", "type": "decimal", "cat": "Makanan", "category": "Protein Hewani"},
-    {"name": "Salmon", "cal": 208, "unit": "Potong", "type": "decimal", "cat": "Makanan", "category": "Protein Hewani"},
-    {"name": "Cumi", "cal": 92, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Protein Hewani"},
-    {"name": "Telur Rebus", "cal": 70, "unit": "Butir", "type": "int", "cat": "Makanan", "category": "Protein Hewani"},
-    {"name": "Telur Dadar", "cal": 90, "unit": "Butir", "type": "int", "cat": "Makanan", "category": "Protein Hewani"},
-    {"name": "Apel", "cal": 95, "unit": "Buah", "type": "int", "cat": "Makanan", "category": "Buah"},
-    {"name": "Pisang", "cal": 110, "unit": "Buah", "type": "int", "cat": "Makanan", "category": "Buah"},
-    {"name": "Mangga", "cal": 135, "unit": "Buah", "type": "int", "cat": "Makanan", "category": "Buah"},
-    {"name": "Jeruk", "cal": 60, "unit": "Buah", "type": "int", "cat": "Makanan", "category": "Buah"},
-    {"name": "Anggur", "cal": 62, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Buah"},
-    {"name": "Semangka", "cal": 45, "unit": "Potong", "type": "decimal", "cat": "Makanan", "category": "Buah"},
-    {"name": "Stroberi", "cal": 50, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Buah"},
-    {"name": "Nanas", "cal": 82, "unit": "Potong", "type": "decimal", "cat": "Makanan", "category": "Buah"},
-    {"name": "Pepaya", "cal": 59, "unit": "Potong", "type": "decimal", "cat": "Makanan", "category": "Buah"},
-    {"name": "Kiwi", "cal": 61, "unit": "Buah", "type": "int", "cat": "Makanan", "category": "Buah"},
-    {"name": "Durian", "cal": 357, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Buah"},
-    {"name": "Salak", "cal": 82, "unit": "Buah", "type": "int", "cat": "Makanan", "category": "Buah"},
-    {"name": "Rambutan", "cal": 68, "unit": "Buah", "type": "int", "cat": "Makanan", "category": "Buah"},
-    {"name": "Manggis", "cal": 73, "unit": "Buah", "type": "int", "cat": "Makanan", "category": "Buah"},
-    {"name": "Kelapa", "cal": 283, "unit": "Buah", "type": "int", "cat": "Makanan", "category": "Buah"},
-    {"name": "Sirsak", "cal": 66, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Buah"},
-    {"name": "Jambu Air", "cal": 46, "unit": "Buah", "type": "int", "cat": "Makanan", "category": "Buah"},
-    {"name": "Buah Naga", "cal": 60, "unit": "Buah", "type": "int", "cat": "Makanan", "category": "Buah"},
-    {"name": "Blueberry", "cal": 84, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Buah"},
-    {"name": "Alpukat", "cal": 234, "unit": "Buah", "type": "int", "cat": "Makanan", "category": "Buah"},
-    {"name": "Bayam", "cal": 25, "unit": "Mangkok", "type": "decimal", "cat": "Makanan", "category": "Sayur"},
-    {"name": "Kangkung", "cal": 35, "unit": "Mangkok", "type": "decimal", "cat": "Makanan", "category": "Sayur"},
-    {"name": "Wortel", "cal": 40, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Sayur"},
-    {"name": "Tomat", "cal": 22, "unit": "Buah", "type": "int", "cat": "Makanan", "category": "Sayur"},
-    {"name": "Buncis", "cal": 44, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Sayur"},
-    {"name": "Kol", "cal": 25, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Sayur"},
-    {"name": "Sawi", "cal": 23, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Sayur"},
-    {"name": "Selada", "cal": 15, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Sayur"},
-    {"name": "Terong", "cal": 35, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Sayur"},
-    {"name": "Singkong", "cal": 160, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Sayur"},
-    {"name": "Timun", "cal": 15, "unit": "Buah", "type": "int", "cat": "Makanan", "category": "Sayur"},
-    {"name": "Brokoli", "cal": 55, "unit": "Mangkok", "type": "decimal", "cat": "Makanan", "category": "Sayur"},
-    {"name": "Burger", "cal": 295, "unit": "Porsi", "type": "int", "cat": "Makanan", "category": "Cepat Saji"},
-    {"name": "Pizza", "cal": 285, "unit": "Slice", "type": "int", "cat": "Makanan", "category": "Cepat Saji"},
-    {"name": "Fried Chicken", "cal": 320, "unit": "Potong", "type": "int", "cat": "Makanan", "category": "Cepat Saji"},
-    {"name": "Mie Instan", "cal": 380, "unit": "Bungkus", "type": "int", "cat": "Makanan", "category": "Makanan Lainnya"},
-    {"name": "Bakso", "cal": 250, "unit": "Mangkok", "type": "decimal", "cat": "Makanan", "category": "Makanan Lainnya"},
-    {"name": "Nasi Padang", "cal": 650, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Makanan Lainnya"},
-    {"name": "Kopi Americano", "cal": 5, "unit": "Cangkir", "type": "decimal", "cat": "Minuman", "category": "Kopi"},
-    {"name": "Kopi Susu", "cal": 120, "unit": "Cangkir", "type": "decimal", "cat": "Minuman", "category": "Kopi"},
-    {"name": "Air Putih", "cal": 0, "unit": "Gelas", "type": "int", "cat": "Minuman", "category": "Dasar"},
-    {"name": "Jus Apel", "cal": 120, "unit": "Gelas", "type": "decimal", "cat": "Minuman", "category": "Jus"},
-    {"name": "Jus Pisang", "cal": 150, "unit": "Gelas", "type": "decimal", "cat": "Minuman", "category": "Jus"},
-    {"name": "Jus Mangga", "cal": 130, "unit": "Gelas", "type": "decimal", "cat": "Minuman", "category": "Jus"},
-    {"name": "Jus Wortel", "cal": 80, "unit": "Gelas", "type": "decimal", "cat": "Minuman", "category": "Jus Sayur"},
-    {"name": "Jus Tomat Mix Wortel", "cal": 75, "unit": "Gelas", "type": "decimal", "cat": "Minuman", "category": "Jus Mix"},
-    {"name": "Jus Timun Mix Pir", "cal": 90, "unit": "Gelas", "type": "decimal", "cat": "Minuman", "category": "Jus Mix"},
-    {"name": "Jus Buah Naga Mix Pisang", "cal": 160, "unit": "Gelas", "type": "decimal", "cat": "Minuman", "category": "Jus Mix"},
-    {"name": "Jus Buah Naga Mix Stroberi", "cal": 110, "unit": "Gelas", "type": "decimal", "cat": "Minuman", "category": "Jus Mix"},
+    {"name": "Nasi Putih", "cal": 175, "unit": "Porsi", "cat": "Makanan", "category": "Karbohidrat"},
+    {"name": "Nasi Merah", "cal": 165, "unit": "Porsi", "cat": "Makanan", "category": "Karbohidrat"},
+    {"name": "Nasi Kuning", "cal": 180, "unit": "Porsi", "cat": "Makanan", "category": "Karbohidrat"},
+    {"name": "Kentang Rebus", "cal": 130, "unit": "Porsi", "cat": "Makanan", "category": "Karbohidrat"},
+    {"name": "Ubi Rebus", "cal": 160, "unit": "Porsi", "cat": "Makanan", "category": "Karbohidrat"},
+    {"name": "Roti Putih", "cal": 80, "unit": "Lembar", "cat": "Makanan", "category": "Karbohidrat"},
+    {"name": "Roti Gandum", "cal": 90, "unit": "Lembar", "cat": "Makanan", "category": "Karbohidrat"},
+    {"name": "Ayam Goreng", "cal": 250, "unit": "Potong", "cat": "Makanan", "category": "Protein Hewani"},
+    {"name": "Ayam Panggang", "cal": 190, "unit": "Potong", "cat": "Makanan", "category": "Protein Hewani"},
+    {"name": "Daging Sapi", "cal": 270, "unit": "Potong", "cat": "Makanan", "category": "Protein Hewani"},
+    {"name": "Ikan Goreng", "cal": 220, "unit": "Potong", "cat": "Makanan", "category": "Protein Hewani"},
+    {"name": "Ikan Tuna", "cal": 180, "unit": "Potong", "cat": "Makanan", "category": "Protein Hewani"},
+    {"name": "Salmon", "cal": 208, "unit": "Potong", "cat": "Makanan", "category": "Protein Hewani"},
+    {"name": "Cumi", "cal": 92, "unit": "Porsi", "cat": "Makanan", "category": "Protein Hewani"},
+    {"name": "Telur Rebus", "cal": 70, "unit": "Butir", "cat": "Makanan", "category": "Protein Hewani"},
+    {"name": "Telur Dadar", "cal": 90, "unit": "Butir", "cat": "Makanan", "category": "Protein Hewani"},
+    {"name": "Apel", "cal": 95, "unit": "Buah", "cat": "Makanan", "category": "Buah"},
+    {"name": "Pisang", "cal": 110, "unit": "Buah", "cat": "Makanan", "category": "Buah"},
+    {"name": "Mangga", "cal": 135, "unit": "Buah", "cat": "Makanan", "category": "Buah"},
+    {"name": "Jeruk", "cal": 60, "unit": "Buah", "cat": "Makanan", "category": "Buah"},
+    {"name": "Anggur", "cal": 62, "unit": "Porsi", "cat": "Makanan", "category": "Buah"},
+    {"name": "Semangka", "cal": 45, "unit": "Potong", "cat": "Makanan", "category": "Buah"},
+    {"name": "Stroberi", "cal": 50, "unit": "Porsi", "cat": "Makanan", "category": "Buah"},
+    {"name": "Nanas", "cal": 82, "unit": "Potong", "cat": "Makanan", "category": "Buah"},
+    {"name": "Pepaya", "cal": 59, "unit": "Potong", "cat": "Makanan", "category": "Buah"},
+    {"name": "Kiwi", "cal": 61, "unit": "Buah", "cat": "Makanan", "category": "Buah"},
+    {"name": "Durian", "cal": 357, "unit": "Porsi", "cat": "Makanan", "category": "Buah"},
+    {"name": "Salak", "cal": 82, "unit": "Buah", "cat": "Makanan", "category": "Buah"},
+    {"name": "Rambutan", "cal": 68, "unit": "Buah", "cat": "Makanan", "category": "Buah"},
+    {"name": "Manggis", "cal": 73, "unit": "Buah", "cat": "Makanan", "category": "Buah"},
+    {"name": "Kelapa", "cal": 283, "unit": "Buah", "cat": "Makanan", "category": "Buah"},
+    {"name": "Sirsak", "cal": 66, "unit": "Porsi", "cat": "Makanan", "category": "Buah"},
+    {"name": "Jambu Air", "cal": 46, "unit": "Buah", "cat": "Makanan", "category": "Buah"},
+    {"name": "Buah Naga", "cal": 60, "unit": "Buah", "cat": "Makanan", "category": "Buah"},
+    {"name": "Blueberry", "cal": 84, "unit": "Porsi", "cat": "Makanan", "category": "Buah"},
+    {"name": "Alpukat", "cal": 234, "unit": "Buah", "cat": "Makanan", "category": "Buah"},
+    {"name": "Bayam", "cal": 25, "unit": "Mangkok", "cat": "Makanan", "category": "Sayur"},
+    {"name": "Kangkung", "cal": 35, "unit": "Mangkok", "cat": "Makanan", "category": "Sayur"},
+    {"name": "Wortel", "cal": 40, "unit": "Porsi", "cat": "Makanan", "category": "Sayur"},
+    {"name": "Tomat", "cal": 22, "unit": "Buah", "cat": "Makanan", "category": "Sayur"},
+    {"name": "Buncis", "cal": 44, "unit": "Porsi", "cat": "Makanan", "category": "Sayur"},
+    {"name": "Kol", "cal": 25, "unit": "Porsi", "cat": "Makanan", "category": "Sayur"},
+    {"name": "Sawi", "cal": 23, "unit": "Porsi", "cat": "Makanan", "category": "Sayur"},
+    {"name": "Selada", "cal": 15, "unit": "Porsi", "cat": "Makanan", "category": "Sayur"},
+    {"name": "Terong", "cal": 35, "unit": "Porsi", "cat": "Makanan", "category": "Sayur"},
+    {"name": "Singkong", "cal": 160, "unit": "Porsi", "cat": "Makanan", "category": "Sayur"},
+    {"name": "Timun", "cal": 15, "unit": "Buah", "cat": "Makanan", "category": "Sayur"},
+    {"name": "Brokoli", "cal": 55, "unit": "Mangkok", "cat": "Makanan", "category": "Sayur"},
+    {"name": "Burger", "cal": 295, "unit": "Porsi", "cat": "Makanan", "category": "Cepat Saji"},
+    {"name": "Pizza", "cal": 285, "unit": "Slice", "cat": "Makanan", "category": "Cepat Saji"},
+    {"name": "Fried Chicken", "cal": 320, "unit": "Potong", "cat": "Makanan", "category": "Cepat Saji"},
+    {"name": "Mie Instan", "cal": 380, "unit": "Bungkus", "cat": "Makanan", "category": "Makanan Lainnya"},
+    {"name": "Bakso", "cal": 250, "unit": "Mangkok", "cat": "Makanan", "category": "Makanan Lainnya"},
+    {"name": "Nasi Padang", "cal": 650, "unit": "Porsi", "cat": "Makanan", "category": "Makanan Lainnya"},
+    {"name": "Kopi Americano", "cal": 5, "unit": "Cangkir", "cat": "Minuman", "category": "Kopi"},
+    {"name": "Kopi Susu", "cal": 120, "unit": "Cangkir", "cat": "Minuman", "category": "Kopi"},
+    {"name": "Air Putih", "cal": 0, "unit": "Gelas", "cat": "Minuman", "category": "Dasar"},
+    {"name": "Jus Apel", "cal": 120, "unit": "Gelas", "cat": "Minuman", "category": "Jus"},
+    {"name": "Jus Pisang", "cal": 150, "unit": "Gelas", "cat": "Minuman", "category": "Jus"},
+    {"name": "Jus Mangga", "cal": 130, "unit": "Gelas", "cat": "Minuman", "category": "Jus"},
+    {"name": "Jus Wortel", "cal": 80, "unit": "Gelas", "cat": "Minuman", "category": "Jus Sayur"},
+    {"name": "Jus Tomat Mix Wortel", "cal": 75, "unit": "Gelas", "cat": "Minuman", "category": "Jus Mix"},
+    {"name": "Jus Timun Mix Pir", "cal": 90, "unit": "Gelas", "cat": "Minuman", "category": "Jus Mix"},
+    {"name": "Jus Buah Naga Mix Pisang", "cal": 160, "unit": "Gelas", "cat": "Minuman", "category": "Jus Mix"},
+    {"name": "Jus Buah Naga Mix Stroberi", "cal": 110, "unit": "Gelas", "cat": "Minuman", "category": "Jus Mix"},
 ]
 
+# DAFTAR OLAHRAGA LENGKAP
 exercises = [
     {"name": "Angkat Beban (30 mnt)", "burn_rate": 150},
     {"name": "Lari (30 mnt)", "burn_rate": 300},
@@ -163,16 +167,11 @@ with st.sidebar:
     height = st.number_input("Tinggi Badan (cm)", 100, 250, 160)
     age = st.number_input("Usia", 5, 100, 20)
     
-    bmi = weight / ((height/100)**2)
-    st.write(f"**BMI Kamu:** {bmi:.1f}")
-    
     if gender == "Laki-laki":
         bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age)
     else:
         bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age)
-    
     tdee = bmr * 1.375
-    st.info(f"Target Harian: **{int(tdee)} kcal**")
     
     st.divider()
     list_menu = ["🏠 Dashboard", "🍎 Database Makanan", "📔 Food Diary", "🏃 Aktivitas"]
@@ -182,29 +181,29 @@ with st.sidebar:
 
 st.markdown('<div class="ribbon">🎀 Calorie Tracker 🎀</div>', unsafe_allow_html=True)
 
+# HALAMAN DASHBOARD (HANYA MUNCUL JIKA DATA SUDAH LENGKAP)
 if st.session_state.menu_pilihan == "🏠 Dashboard":
     st.subheader("📊 Ringkasan Hari Ini")
-    total_in = sum(item['cal'] for item in st.session_state.diary)
-    total_out = sum(item['burn'] for item in st.session_state.exercise)
-    remaining = tdee - (total_in - total_out)
     
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Masuk", f"{int(total_in)} kcal")
-    col2.metric("Keluar", f"{int(total_out)} kcal")
-    col3.metric("Sisa", f"{int(remaining)} kcal")
+    if st.session_state.diary and st.session_state.exercise:
+        total_in = sum(item['cal'] for item in st.session_state.diary)
+        total_out = sum(item['burn'] for item in st.session_state.exercise)
+        remaining = tdee - (total_in - total_out)
+        
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Masuk", f"{int(total_in)} kcal")
+        col2.metric("Keluar", f"{int(total_out)} kcal")
+        col3.metric("Sisa", f"{int(remaining)} kcal")
 
-    progress = min(total_in / tdee, 1.0) if tdee > 0 else 0
-    st.write(f"**Progress Kuota Kalori ({int(progress*100)}%)**")
-    st.progress(progress)
-
-    if st.session_state.diary:
         st.write("### 📈 Grafik Konsumsi")
         df = pd.DataFrame(st.session_state.diary)
         chart_data = df.groupby('time')['cal'].sum().reset_index()
         st.bar_chart(chart_data, x="time", y="cal", color="time", use_container_width=True)
     else:
-        st.info("Belum ada data. Yuk catat makananmu di menu Food Diary!")
+        st.info("👋 Halo! Grafik Dashboard kamu masih kosong.")
+        st.warning("Silakan isi **Food Diary** (makanan) dan **Aktivitas** (olahraga) terlebih dahulu agar ringkasannya muncul di sini!")
 
+# HALAMAN DATABASE
 elif st.session_state.menu_pilihan == "🍎 Database Makanan":
     st.header("🍎 Daftar Nutrisi")
     tab1, tab2 = st.tabs(["🍴 Makanan", "🥤 Minuman"])
@@ -215,20 +214,20 @@ elif st.session_state.menu_pilihan == "🍎 Database Makanan":
         for f in [x for x in foods if x["cat"] == "Minuman"]:
             st.markdown(f"<div class='card'><b>{f['name']}</b><br>{f['cal']} kkal / {f['unit']}</div>", unsafe_allow_html=True)
 
+# HALAMAN INPUT MAKANAN
 elif st.session_state.menu_pilihan == "📔 Food Diary":
     st.header("📔 Catat Konsumsi")
     waktu = st.selectbox("Waktu", ["Sarapan", "Makan Siang", "Makan Malam", "Cemilan"])
     kat = st.radio("Kategori", ["Makanan", "Minuman"], horizontal=True)
     pilihan = st.selectbox(f"Pilih {kat}", sorted([f["name"] for f in foods if f["cat"] == kat]))
-    
     item = next(f for f in foods if f["name"] == pilihan)
-    porsi = st.number_input(f"Jumlah ({item['unit']})", min_value=0.1, step=0.1, value=1.0)
+    porsi = st.number_input(f"Jumlah ({item['unit']})", 0.1, 10.0, 1.0)
     
     if st.button("➕ Tambahkan"):
         st.session_state.diary.append({"time": waktu, "name": pilihan, "cal": item["cal"] * porsi})
-        st.session_state.menu_pilihan = "🏠 Dashboard" 
-        st.rerun()
+        st.success(f"Berhasil mencatat {pilihan}!")
 
+# HALAMAN INPUT OLAHRAGA
 elif st.session_state.menu_pilihan == "🏃 Aktivitas":
     st.header("🏃 Log Olahraga")
     pilihan_ex = st.selectbox("Pilih Olahraga", [ex["name"] for ex in exercises])
@@ -236,8 +235,7 @@ elif st.session_state.menu_pilihan == "🏃 Aktivitas":
     data_ex = next(ex for ex in exercises if ex["name"] == pilihan_ex)
     burn = int((data_ex["burn_rate"] / 30) * durasi)
     
-    st.info(f"🔥 Estimasi Terbakar: {burn} kcal")
-    if st.button("Simpan"):
+    st.info(f"🔥 Estimasi kalori terbakar: {burn} kcal")
+    if st.button("Simpan Aktivitas"):
         st.session_state.exercise.append({"act": pilihan_ex, "burn": burn})
-        st.session_state.menu_pilihan = "🏠 Dashboard" 
-        st.rerun()
+        st.success("Aktivitas tersimpan! Silakan cek Dashboard jika sudah selesai input semua.")
