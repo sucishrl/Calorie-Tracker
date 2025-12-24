@@ -15,20 +15,28 @@ st.markdown("""
     background-attachment: fixed;
 }
 
-/* 1. PERBAIKAN TEKS DI DALAM KOTAK INPUT (BIAR KELIHATAN DI DARK MODE) */
-div[data-baseweb="select"] > div {
+/* 1. PERBAIKAN SEMUA KOTAK INPUT (SELECTBOX & NUMBER INPUT) AGAR PUTIH BERSIH */
+/* Mengatur kotak seleksi dan kotak angka */
+div[data-baseweb="select"] > div, 
+div[data-testid="stNumberInput"] div[data-baseweb="input"] {
     background-color: #ffffff !important;
-    color: #000000 !important;
-}
-div[role="listbox"] ul {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-}
-input {
-    color: #000000 !important;
+    border: 1px solid #ffb6c1 !important;
 }
 
-/* 2. PERBAIKAN PANAH SIDEBAR (COLLAPSE BUTTON) */
+/* Mengatur warna teks di dalam kotak agar hitam pekat */
+div[data-baseweb="select"] div, 
+div[data-testid="stNumberInput"] input {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+}
+
+/* Mengatur warna ikon plus/minus pada input angka */
+div[data-testid="stNumberInput"] button {
+    background-color: #ffffff !important;
+    color: #ff4d94 !important;
+}
+
+/* 2. PERBAIKAN PANAH SIDEBAR & IKON */
 button[aria-label="Open sidebar"] svg, 
 button[aria-label="Close sidebar"] svg,
 button[data-testid="sidebar-button"] svg {
@@ -46,7 +54,7 @@ section[data-testid="stSidebar"] label, section[data-testid="stSidebar"] p {
     font-weight: bold !important;
 }
 
-/* 4. RIBBON & MAIN CONTENT */
+/* 4. TAMPILAN UTAMA */
 .ribbon {
     background: #ff85b3; color: white !important; padding: 20px; border-radius: 25px;
     text-align: center; font-size: 32px; font-weight: bold;
@@ -68,7 +76,6 @@ section[data-testid="stSidebar"] label, section[data-testid="stSidebar"] p {
 </style>
 """, unsafe_allow_html=True)
 
-# DAFTAR MAKANAN LENGKAP SEPERTI CODINGAN AWAL
 foods = [
     {"name": "Nasi Putih", "cal": 175, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Karbohidrat"},
     {"name": "Nasi Merah", "cal": 165, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Karbohidrat"},
