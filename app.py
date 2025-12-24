@@ -28,9 +28,16 @@ section[data-testid="stSidebar"] {
     background: linear-gradient(180deg, #ffb6c1, #ffd6e6); 
 }
 .card {
-    background-color: white; padding: 15px; border-radius: 20px;
-    box-shadow: 0 4px 15px rgba(255,182,193,0.2); margin-bottom: 15px;
+    background-color: #ffffff !important; 
+    padding: 15px; 
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(255,182,193,0.3); 
+    margin-bottom: 15px;
     border-left: 5px solid #ff85b3;
+    color: #000000 !important; /* INI SUPAYA TEKS JADI HITAM PEKAT */
+}
+.card b {
+    color: #ff4d94 !important; /* INI SUPAYA JUDUL MAKANAN PINK TUA */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -200,4 +207,5 @@ elif menu == "🏃 Aktivitas":
     st.info(f"🔥 Estimasi terbakar: {burn} kcal")
     if st.button("Simpan Aktivitas"):
         st.session_state.exercise.append({"act": pilihan_ex, "burn": burn})
+
         st.balloons()
