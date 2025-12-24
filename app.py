@@ -3,6 +3,10 @@ import pandas as pd
 
 st.set_page_config(page_title="Calorie Tracker", layout="wide", page_icon="🎀")
 
+if "diary" not in st.session_state: st.session_state.diary = []
+if "exercise" not in st.session_state: st.session_state.exercise = []
+if "menu_pilihan" not in st.session_state: st.session_state.menu_pilihan = "🏠 Dashboard"
+
 st.markdown("""
 <style>
 .stApp {
@@ -10,35 +14,34 @@ st.markdown("""
                       linear-gradient(180deg, #ffe6ef 0%, #fff5f8 100%);
     background-attachment: fixed;
 }
+h1, h2, h3, p, span, li, label, .stMarkdown {
+    color: #1a1a1a !important;
+}
 .main .block-container {
     background-color: rgba(255, 255, 255, 0.8); 
-    border-radius: 30px;
-    padding: 40px;
-    margin-top: 20px;
+    border-radius: 30px; padding: 40px; margin-top: 20px;
     box-shadow: 0 10px 30px rgba(255, 182, 193, 0.3);
 }
 .ribbon {
-    background: #ff85b3; color: white; padding: 20px; border-radius: 25px;
+    background: #ff85b3; color: white !important; padding: 20px; border-radius: 25px;
     text-align: center; font-size: 32px; font-weight: bold;
-    box-shadow: 0 6px 15px rgba(255,105,180,0.4); 
-    margin-bottom: 30px;
+    box-shadow: 0 6px 15px rgba(255,105,180,0.4); margin-bottom: 30px;
     border: 3px dashed rgba(255,255,255,0.5);
 }
+[data-testid="stMetricValue"] { color: #ff4d94 !important; }
+[data-testid="stMetricLabel"] { color: #333333 !important; }
 section[data-testid="stSidebar"] { 
     background: linear-gradient(180deg, #ffb6c1, #ffd6e6); 
 }
+section[data-testid="stSidebar"] label, section[data-testid="stSidebar"] p {
+    color: #000000 !important;
+}
 .card {
-    background-color: #ffffff !important; 
-    padding: 15px; 
-    border-radius: 20px;
-    box-shadow: 0 4px 15px rgba(255,182,193,0.3); 
-    margin-bottom: 15px;
-    border-left: 5px solid #ff85b3;
-    color: #000000 !important; /* INI SUPAYA TEKS JADI HITAM PEKAT */
+    background-color: #ffffff !important; padding: 15px; border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(255,182,193,0.3); margin-bottom: 15px;
+    border-left: 5px solid #ff85b3; color: #1a1a1a !important;
 }
-.card b {
-    color: #ff4d94 !important; /* INI SUPAYA JUDUL MAKANAN PINK TUA */
-}
+.card b { color: #ff4d94 !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -119,15 +122,11 @@ exercises = [
     {"name": "Padel (30 mnt)", "burn_rate": 300},
     {"name": "Basket (30 mnt)", "burn_rate": 650},
     {"name": "Sepak bola (30 mnt)", "burn_rate": 300},
-    {"name": "Golf (30 mnt)", "burn_rate": 100}
+    {"name": "Golf(30 mnt)", "burn_rate": 100}
 ]
-
-if "diary" not in st.session_state: st.session_state.diary = []
-if "exercise" not in st.session_state: st.session_state.exercise = []
 
 with st.sidebar:
     st.title("🎀 Profil & Menu")
-    st.subheader("👤 Data Pengguna")
     gender = st.selectbox("Jenis Kelamin", ["Perempuan", "Laki-laki"])
     weight = st.number_input("Berat Badan (kg)", 30, 200, 55)
     height = st.number_input("Tinggi Badan (cm)", 100, 250, 160)
@@ -142,70 +141,80 @@ with st.sidebar:
         bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age)
     
     tdee = bmr * 1.375
-    st.info(f"Kebutuhan Kalori Harian: **{int(tdee)} kcal**")
+    st.info(f"Target Harian: **{int(tdee)} kcal**")
     
     st.divider()
-    menu = st.radio("Pindah Halaman:", ["🏠 Dashboard", "🍎 Database Makanan", "📔 Food Diary", "🏃 Aktivitas"])
+    list_menu = ["🏠 Dashboard", "🍎 Database Makanan", "📔 Food Diary", "🏃 Aktivitas"]
+    idx_sekarang = list_menu.index(st.session_state.menu_pilihan)
+    
+    menu = st.radio("Pilih Halaman:", list_menu, index=idx_sekarang)
+    st.session_state.menu_pilihan = menu
 
 st.markdown('<div class="ribbon">🎀 Calorie Tracker 🎀</div>', unsafe_allow_html=True)
 
-if menu == "🏠 Dashboard":
+if st.session_state.menu_pilihan == "🏠 Dashboard":
     st.subheader("📊 Ringkasan Hari Ini")
     total_in = sum(item['cal'] for item in st.session_state.diary)
     total_out = sum(item['burn'] for item in st.session_state.exercise)
     remaining = tdee - (total_in - total_out)
     
     col1, col2, col3 = st.columns(3)
-    col1.metric("Kalori Masuk", f"{total_in} kcal")
-    col2.metric("Kalori Keluar", f"{total_out} kcal")
-    col3.metric("Sisa Kuota", f"{int(remaining)} kcal")
+    col1.metric("Masuk", f"{int(total_in)} kcal")
+    col2.metric("Keluar", f"{int(total_out)} kcal")
+    col3.metric("Sisa", f"{int(remaining)} kcal")
 
     progress = min(total_in / tdee, 1.0) if tdee > 0 else 0
-    st.write(f"**Progress Kuota Kalori Harian ({int(progress*100)}%)**")
+    st.write(f"**Progress Kuota Kalori ({int(progress*100)}%)**")
     st.progress(progress)
 
     if st.session_state.diary:
-        st.write("### 📈 Grafik Kalori per Waktu Makan")
+        st.write("### 📈 Grafik Konsumsi Warna-Warni")
         df = pd.DataFrame(st.session_state.diary)
-        chart_data = df.groupby('time')['cal'].sum()
-        st.bar_chart(chart_data)
+        chart_data = df.groupby('time')['cal'].sum().reset_index()
+        
+        st.bar_chart(
+            chart_data, 
+            x="time", 
+            y="cal", 
+            color="time", 
+            use_container_width=True
+        )
     else:
-        st.info("Belum ada data konsumsi. Silakan catat makanan kamu di menu Food Diary!")
+        st.info("Belum ada data. Yuk catat makananmu di menu Food Diary!")
 
-elif menu == "🍎 Database Makanan":
-    st.header("🍎 Daftar Nutrisi Lengkap")
+elif st.session_state.menu_pilihan == "🍎 Database Makanan":
+    st.header("🍎 Daftar Nutrisi")
     tab1, tab2 = st.tabs(["🍴 Makanan", "🥤 Minuman"])
     with tab1:
         for f in [x for x in foods if x["cat"] == "Makanan"]:
-            st.markdown(f"<div class='card'><b>{f['name']}</b> ({f['category']})<br>{f['cal']} kkal per {f['unit']}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='card'><b>{f['name']}</b> ({f['category']})<br>{f['cal']} kkal / {f['unit']}</div>", unsafe_allow_html=True)
     with tab2:
         for f in [x for x in foods if x["cat"] == "Minuman"]:
-            st.markdown(f"<div class='card'><b>{f['name']}</b> ({f['category']})<br>{f['cal']} kkal per {f['unit']}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='card'><b>{f['name']}</b><br>{f['cal']} kkal / {f['unit']}</div>", unsafe_allow_html=True)
 
-elif menu == "📔 Food Diary":
+elif st.session_state.menu_pilihan == "📔 Food Diary":
     st.header("📔 Catat Konsumsi")
-    waktu_makan = st.selectbox("Pilih Waktu", ["Sarapan", "Makan Siang", "Makan Malam", "Cemilan"])
-    kategori_pilihan = st.radio("Kategori", ["Makanan", "Minuman"], horizontal=True)
+    waktu = st.selectbox("Waktu", ["Sarapan", "Makan Siang", "Makan Malam", "Cemilan"])
+    kat = st.radio("Kategori", ["Makanan", "Minuman"], horizontal=True)
+    pilihan = st.selectbox(f"Pilih {kat}", sorted([f["name"] for f in foods if f["cat"] == kat]))
     
-    pilihan_list = sorted([f["name"] for f in foods if f["cat"] == kategori_pilihan])
-    pilihan = st.selectbox(f"Pilih {kategori_pilihan}", pilihan_list)
-    item_data = next(f for f in foods if f["name"] == pilihan)
+    item = next(f for f in foods if f["name"] == pilihan)
+    porsi = st.number_input(f"Jumlah ({item['unit']})", min_value=0.1, step=0.1, value=1.0)
     
-    porsi = st.number_input(f"Jumlah ({item_data['unit']})", min_value=0.1 if item_data["type"]=="decimal" else 1.0, step=0.1 if item_data["type"]=="decimal" else 1.0, value=1.0)
-        
     if st.button("➕ Tambahkan"):
-        st.session_state.diary.append({"time": waktu_makan, "name": pilihan, "cal": item_data["cal"] * porsi})
-        st.success(f"{pilihan} ({porsi} {item_data['unit']}) berhasil dicatat!")
+        st.session_state.diary.append({"time": waktu, "name": pilihan, "cal": item["cal"] * porsi})
+        st.session_state.menu_pilihan = "🏠 Dashboard" 
+        st.rerun()
 
-elif menu == "🏃 Aktivitas":
+elif st.session_state.menu_pilihan == "🏃 Aktivitas":
     st.header("🏃 Log Olahraga")
     pilihan_ex = st.selectbox("Pilih Olahraga", [ex["name"] for ex in exercises])
     durasi = st.number_input("Durasi (Menit)", 1, 300, 30)
     data_ex = next(ex for ex in exercises if ex["name"] == pilihan_ex)
     burn = int((data_ex["burn_rate"] / 30) * durasi)
     
-    st.info(f"🔥 Estimasi terbakar: {burn} kcal")
-    if st.button("Simpan Aktivitas"):
+    st.info(f"🔥 Estimasi Terbakar: {burn} kcal")
+    if st.button("Simpan"):
         st.session_state.exercise.append({"act": pilihan_ex, "burn": burn})
-
-        st.balloons()
+        st.session_state.menu_pilihan = "🏠 Dashboard" 
+        st.rerun()
