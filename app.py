@@ -14,7 +14,7 @@ st.markdown("""
                       linear-gradient(180deg, #ffe6ef 0%, #fff5f8 100%);
     background-attachment: fixed;
 }
-/* Paksa semua teks jadi hitam agar terlihat di HP mode gelap */
+/* PAKSA SEMUA TEKS UTAMA JADI HITAM PEKAT */
 h1, h2, h3, h4, p, span, li, label, div, .stMarkdown {
     color: #000000 !important;
 }
@@ -32,12 +32,24 @@ h1, h2, h3, h4, p, span, li, label, div, .stMarkdown {
 [data-testid="stMetricValue"] { color: #ff4d94 !important; font-weight: bold !important; }
 [data-testid="stMetricLabel"] { color: #000000 !important; }
 
+/* PERBAIKAN SIDEBAR: Warna teks dan Ikon Panah */
 section[data-testid="stSidebar"] { 
-    background: linear-gradient(180deg, #ffb6c1, #ffd6e6); 
+    background: linear-gradient(180deg, #ffb6c1, #ffd6e6) !important; 
 }
-section[data-testid="stSidebar"] label, section[data-testid="stSidebar"] p {
+/* Memperjelas teks label di sidebar (seperti Jenis Kelamin) */
+section[data-testid="stSidebar"] label {
+    color: #000000 !important;
+    font-weight: bold !important;
+}
+/* Mengubah warna panah sidebar agar tidak nyaru */
+button[data-testid="sidebar-button"] svg {
+    fill: #ff4d94 !important;
+}
+/* Warna teks radio button di sidebar */
+div[data-testid="stSidebar"] .stRadio p {
     color: #000000 !important;
 }
+
 .card {
     background-color: #ffffff !important; padding: 15px; border-radius: 20px;
     box-shadow: 0 4px 15px rgba(255,182,193,0.3); margin-bottom: 15px;
