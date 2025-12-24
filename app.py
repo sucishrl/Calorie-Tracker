@@ -14,8 +14,9 @@ st.markdown("""
                       linear-gradient(180deg, #ffe6ef 0%, #fff5f8 100%);
     background-attachment: fixed;
 }
-h1, h2, h3, p, span, li, label, .stMarkdown {
-    color: #1a1a1a !important;
+/* Paksa semua teks jadi hitam agar terlihat di HP mode gelap */
+h1, h2, h3, h4, p, span, li, label, div, .stMarkdown {
+    color: #000000 !important;
 }
 .main .block-container {
     background-color: rgba(255, 255, 255, 0.8); 
@@ -28,8 +29,9 @@ h1, h2, h3, p, span, li, label, .stMarkdown {
     box-shadow: 0 6px 15px rgba(255,105,180,0.4); margin-bottom: 30px;
     border: 3px dashed rgba(255,255,255,0.5);
 }
-[data-testid="stMetricValue"] { color: #ff4d94 !important; }
-[data-testid="stMetricLabel"] { color: #333333 !important; }
+[data-testid="stMetricValue"] { color: #ff4d94 !important; font-weight: bold !important; }
+[data-testid="stMetricLabel"] { color: #000000 !important; }
+
 section[data-testid="stSidebar"] { 
     background: linear-gradient(180deg, #ffb6c1, #ffd6e6); 
 }
@@ -39,7 +41,7 @@ section[data-testid="stSidebar"] label, section[data-testid="stSidebar"] p {
 .card {
     background-color: #ffffff !important; padding: 15px; border-radius: 20px;
     box-shadow: 0 4px 15px rgba(255,182,193,0.3); margin-bottom: 15px;
-    border-left: 5px solid #ff85b3; color: #1a1a1a !important;
+    border-left: 5px solid #ff85b3; color: #000000 !important;
 }
 .card b { color: #ff4d94 !important; }
 </style>
