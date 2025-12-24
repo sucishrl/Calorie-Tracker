@@ -14,41 +14,50 @@ st.markdown("""
                       linear-gradient(180deg, #ffe6ef 0%, #fff5f8 100%);
     background-attachment: fixed;
 }
-/* PAKSA SEMUA TEKS UTAMA JADI HITAM PEKAT */
-h1, h2, h3, h4, p, span, li, label, div, .stMarkdown {
+
+/* 1. PERBAIKAN TEKS DI DALAM KOTAK INPUT (BIAR KELIHATAN DI DARK MODE) */
+div[data-baseweb="select"] > div {
+    background-color: #ffffff !important;
     color: #000000 !important;
 }
-.main .block-container {
-    background-color: rgba(255, 255, 255, 0.8); 
-    border-radius: 30px; padding: 40px; margin-top: 20px;
-    box-shadow: 0 10px 30px rgba(255, 182, 193, 0.3);
+div[role="listbox"] ul {
+    background-color: #ffffff !important;
+    color: #000000 !important;
 }
+input {
+    color: #000000 !important;
+}
+
+/* 2. PERBAIKAN PANAH SIDEBAR (COLLAPSE BUTTON) */
+button[aria-label="Open sidebar"] svg, 
+button[aria-label="Close sidebar"] svg,
+button[data-testid="sidebar-button"] svg {
+    fill: #ff4d94 !important;
+    width: 35px;
+    height: 35px;
+}
+
+/* 3. SIDEBAR STYLING */
+section[data-testid="stSidebar"] { 
+    background: linear-gradient(180deg, #ffb6c1, #ffd6e6) !important; 
+}
+section[data-testid="stSidebar"] label, section[data-testid="stSidebar"] p {
+    color: #000000 !important;
+    font-weight: bold !important;
+}
+
+/* 4. RIBBON & MAIN CONTENT */
 .ribbon {
     background: #ff85b3; color: white !important; padding: 20px; border-radius: 25px;
     text-align: center; font-size: 32px; font-weight: bold;
     box-shadow: 0 6px 15px rgba(255,105,180,0.4); margin-bottom: 30px;
     border: 3px dashed rgba(255,255,255,0.5);
 }
+.main .block-container {
+    background-color: rgba(255, 255, 255, 0.8); 
+    border-radius: 30px; padding: 40px; margin-top: 20px;
+}
 [data-testid="stMetricValue"] { color: #ff4d94 !important; font-weight: bold !important; }
-[data-testid="stMetricLabel"] { color: #000000 !important; }
-
-/* PERBAIKAN SIDEBAR: Warna teks dan Ikon Panah */
-section[data-testid="stSidebar"] { 
-    background: linear-gradient(180deg, #ffb6c1, #ffd6e6) !important; 
-}
-/* Memperjelas teks label di sidebar (seperti Jenis Kelamin) */
-section[data-testid="stSidebar"] label {
-    color: #000000 !important;
-    font-weight: bold !important;
-}
-/* Mengubah warna panah sidebar agar tidak nyaru */
-button[data-testid="sidebar-button"] svg {
-    fill: #ff4d94 !important;
-}
-/* Warna teks radio button di sidebar */
-div[data-testid="stSidebar"] .stRadio p {
-    color: #000000 !important;
-}
 
 .card {
     background-color: #ffffff !important; padding: 15px; border-radius: 20px;
@@ -59,6 +68,7 @@ div[data-testid="stSidebar"] .stRadio p {
 </style>
 """, unsafe_allow_html=True)
 
+# DAFTAR MAKANAN LENGKAP SEPERTI CODINGAN AWAL
 foods = [
     {"name": "Nasi Putih", "cal": 175, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Karbohidrat"},
     {"name": "Nasi Merah", "cal": 165, "unit": "Porsi", "type": "decimal", "cat": "Makanan", "category": "Karbohidrat"},
@@ -160,7 +170,6 @@ with st.sidebar:
     st.divider()
     list_menu = ["🏠 Dashboard", "🍎 Database Makanan", "📔 Food Diary", "🏃 Aktivitas"]
     idx_sekarang = list_menu.index(st.session_state.menu_pilihan)
-    
     menu = st.radio("Pilih Halaman:", list_menu, index=idx_sekarang)
     st.session_state.menu_pilihan = menu
 
@@ -182,17 +191,10 @@ if st.session_state.menu_pilihan == "🏠 Dashboard":
     st.progress(progress)
 
     if st.session_state.diary:
-        st.write("### 📈 Grafik Konsumsi Warna-Warni")
+        st.write("### 📈 Grafik Konsumsi")
         df = pd.DataFrame(st.session_state.diary)
         chart_data = df.groupby('time')['cal'].sum().reset_index()
-        
-        st.bar_chart(
-            chart_data, 
-            x="time", 
-            y="cal", 
-            color="time", 
-            use_container_width=True
-        )
+        st.bar_chart(chart_data, x="time", y="cal", color="time", use_container_width=True)
     else:
         st.info("Belum ada data. Yuk catat makananmu di menu Food Diary!")
 
@@ -232,4 +234,3 @@ elif st.session_state.menu_pilihan == "🏃 Aktivitas":
         st.session_state.exercise.append({"act": pilihan_ex, "burn": burn})
         st.session_state.menu_pilihan = "🏠 Dashboard" 
         st.rerun()
-
