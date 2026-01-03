@@ -3,56 +3,64 @@ import pandas as pd
 
 st.set_page_config(page_title="Calorie Tracker", layout="wide", page_icon="🎀")
 
+# --- INITIALIZING SESSION STATE ---
 if "step" not in st.session_state: st.session_state.step = 1
 if "diary" not in st.session_state: st.session_state.diary = []
 if "exercise" not in st.session_state: st.session_state.exercise = []
 
-bg_patterns = {
-    1: "https://www.transparenttextures.com/patterns/healthy-food.png", 
-    2: "https://www.transparenttextures.com/patterns/pinstripe.png",     
-    3: "https://www.transparenttextures.com/patterns/restaurant.png",    
-    4: "https://www.transparenttextures.com/patterns/pyramid.png",       
-    5: "https://www.transparenttextures.com/patterns/skulls.png"         
+# --- MAPPING LINK GAMBAR PINTEREST KAMU ---
+bg_images = {
+    1: "https://i.pinimg.com/736x/01/5f/46/015f46ff9360f26910fcaf5fd7637aae.jpg", # Buah
+    2: "https://i.pinimg.com/736x/2a/ba/4e/2aba4e49f667f8d008f3d7764615ca2b.jpg", # Profil
+    3: "https://i.pinimg.com/1200x/26/6d/f1/266df12a99563256886202bcf49fc45d.jpg", # Food/Hotpot
+    4: "https://i.pinimg.com/736x/97/e1/73/97e17378435b389a53a759b4379b309a.jpg", # Olahraga
+    5: "https://i.pinimg.com/736x/59/12/5f/59125f84abd307ca5da8d2718b11d53f.jpg"  # Dashboard
 }
 
-bg_gradients = {
-    1: "linear-gradient(180deg, #ff9a9e 0%, #fad0c4 100%)", 
-    2: "linear-gradient(180deg, #a1c4fd 0%, #c2e9fb 100%)", 
-    3: "linear-gradient(180deg, #f6d365 0%, #fda085 100%)", 
-    4: "linear-gradient(180deg, #84fab0 0%, #8fd3f4 100%)", 
-    5: "linear-gradient(180deg, #cfd9df 0%, #e2ebf0 100%)"  
-}
+current_bg = bg_images.get(st.session_state.step, bg_images[1])
 
-current_pattern = bg_patterns.get(st.session_state.step)
-current_grad = bg_gradients.get(st.session_state.step)
-
+# --- CSS CUSTOM (BACKGROUND & JUDUL RESPONSIVE) ---
 st.markdown(f"""
 <style>
 .stApp {{
-    background-image: url("{current_pattern}"), {current_grad};
+    background-image: url("{current_bg}");
+    background-size: cover;
+    background-position: center;
     background-attachment: fixed;
 }}
 .main .block-container {{
     background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 30px;
-    padding: 50px;
+    border-radius: 25px;
+    padding: 30px;
+    margin-top: 10px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }}
 .big-title {{
-    text-align: center; color: white;
+    text-align: center; 
+    color: white;
     background: linear-gradient(90deg, #ff4d94, #ff85b3);
-    padding: 30px; border-radius: 30px;
-    font-size: 50px; font-weight: bold;
-    border: 5px dashed white; margin-bottom: 20px;
+    padding: 15px; 
+    border-radius: 20px;
+    font-weight: bold;
+    border: 4px dashed white; 
+    margin-bottom: 20px;
+    /* Font size otomatis mengecil di HP */
+    font-size: clamp(24px, 8vw, 45px);
+    line-height: 1.2;
 }}
 .stButton>button {{
-    width: 100%; background: linear-gradient(90deg, #ff4d94, #ff85b3) !important;
-    color: white !important; border-radius: 20px !important;
-    height: 55px; font-weight: bold !important; border: none !important;
+    width: 100%; 
+    background: linear-gradient(90deg, #ff4d94, #ff85b3) !important;
+    color: white !important; 
+    border-radius: 15px !important;
+    height: 50px; 
+    font-weight: bold !important; 
+    border: none !important;
 }}
 </style>
 """, unsafe_allow_html=True)
 
+# --- DATA MAKANAN ---
 foods = [
     {"name": "Nasi Putih", "cal": 175, "unit": "Porsi", "cat": "Makanan", "category": "Karbohidrat"},
     {"name": "Nasi Merah", "cal": 165, "unit": "Porsi", "cat": "Makanan", "category": "Karbohidrat"},
@@ -123,6 +131,7 @@ foods = [
     {"name": "Jus Buah Naga Mix Pisang", "cal": 160, "unit": "Gelas", "cat": "Minuman", "category": "Jus Mix"},
     {"name": "Jus Buah Naga Mix Stroberi", "cal": 110, "unit": "Gelas", "cat": "Minuman", "category": "Jus Mix"},
 ]
+
 exercises = [
     {"name": "Tidak Olahraga", "burn_rate": 0},
     {"name": "Angkat Beban (30 mnt)", "burn_rate": 150},
@@ -136,10 +145,11 @@ exercises = [
     {"name": "Golf (30 mnt)", "burn_rate": 100}
 ]
 
+# --- LOGIKA APLIKASI ---
 
 if st.session_state.step == 1:
     st.markdown('<div class="big-title">🎀 Calorie Tracker 🎀</div>', unsafe_allow_html=True)
-    st.markdown("<h2 style='text-align: center;'>Halo! Selamat Datang ✨</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center;'>Selamat Datang ✨</h2>", unsafe_allow_html=True)
     if st.button("Mulai Sekarang 🚀"):
         st.session_state.step = 2
         st.rerun()
@@ -156,7 +166,6 @@ elif st.session_state.step == 2:
     
     tdee = (10 * weight) + (6.25 * height) - (5 * age) + (5 if gender == "Laki-laki" else -161)
     st.session_state.target = tdee * 1.375
-    
     st.info(f"Target Harian Kamu: {int(st.session_state.target)} kcal")
     if st.button("Lanjut ke Catat Makanan 📔"):
         st.session_state.step = 3
