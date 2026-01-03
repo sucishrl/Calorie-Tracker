@@ -1,27 +1,27 @@
 import streamlit as st
 import pandas as pd
 
-# --- CONFIG ---
+
 st.set_page_config(page_title="Calorie Tracker", layout="wide", page_icon="🎀")
 
-# --- INITIALIZING SESSION STATE ---
+
 if "step" not in st.session_state: st.session_state.step = 1
 if "diary" not in st.session_state: st.session_state.diary = []
 if "exercise" not in st.session_state: st.session_state.exercise = []
 if "target" not in st.session_state: st.session_state.target = 2000
 
-# --- MAPPING LINK GAMBAR PINTEREST ---
+
 bg_images = {
-    1: "https://i.pinimg.com/736x/01/5f/46/015f46ff9360f26910fcaf5fd7637aae.jpg", 
-    2: "https://i.pinimg.com/736x/2a/ba/4e/2aba4e49f667f8d008f3d7764615ca2b.jpg", 
+    1: "https://i.pinimg.com/736x/30/84/94/3084941ac1c195caf71eac2c95e99af1.jpg",
+    2: "https://i.pinimg.com/736x/9b/3b/47/9b3b47917a219b92c1607cb082d2f939.jpg",
     3: "https://i.pinimg.com/1200x/26/6d/f1/266df12a99563256886202bcf49fc45d.jpg", 
-    4: "https://i.pinimg.com/736x/97/e1/73/97e17378435b389a53a759b4379b309a.jpg", 
-    5: "https://i.pinimg.com/736x/59/12/5f/59125f84abd307ca5da8d2718b11d53f.jpg"
+    4: "https://i.pinimg.com/736x/3c/e5/b2/3ce5b225191b8870b1c7c7b378a7e927.jpg",
+    5: "https://i.pinimg.com/736x/22/76/2c/22762c49f23839f0f81d676951b0e6f6.jpg"
 }
 
 current_bg = bg_images.get(st.session_state.step, bg_images[1])
 
-# --- CSS CUSTOM (RESPONSIVE) ---
+
 st.markdown(f"""
 <style>
 .stApp {{
@@ -63,7 +63,7 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# --- DATA MAKANAN (LENGKAP) ---
+
 foods = [
     {"name": "Nasi Putih", "cal": 175, "unit": "Porsi", "cat": "Makanan", "category": "Karbohidrat"},
     {"name": "Nasi Merah", "cal": 165, "unit": "Porsi", "cat": "Makanan", "category": "Karbohidrat"},
@@ -135,7 +135,7 @@ foods = [
     {"name": "Jus Buah Naga Mix Stroberi", "cal": 110, "unit": "Gelas", "cat": "Minuman", "category": "Jus Mix"},
 ]
 
-# --- DATA OLAHRAGA (LENGKAP) ---
+
 exercises = [
     {"name": "Tidak Olahraga", "burn_rate": 0},
     {"name": "Angkat Beban (30 mnt)", "burn_rate": 150},
@@ -216,7 +216,7 @@ elif st.session_state.step == 5:
     col3.metric("Sisa Kuota", f"{int(remaining)} kcal")
 
     if st.session_state.diary:
-        st.write("### Grafik Konsumsi Kalori")
+        st.write("Grafik Konsumsi Kalori")
         df = pd.DataFrame(st.session_state.diary)
         st.bar_chart(df.groupby('name')['cal'].sum(), color="#ff4d94")
 
