@@ -1,25 +1,27 @@
 import streamlit as st
 import pandas as pd
 
+# --- CONFIG ---
 st.set_page_config(page_title="Calorie Tracker", layout="wide", page_icon="🎀")
 
 # --- INITIALIZING SESSION STATE ---
 if "step" not in st.session_state: st.session_state.step = 1
 if "diary" not in st.session_state: st.session_state.diary = []
 if "exercise" not in st.session_state: st.session_state.exercise = []
+if "target" not in st.session_state: st.session_state.target = 2000
 
-# --- MAPPING LINK GAMBAR PINTEREST KAMU ---
+# --- MAPPING LINK GAMBAR PINTEREST ---
 bg_images = {
-    1: "https://i.pinimg.com/736x/01/5f/46/015f46ff9360f26910fcaf5fd7637aae.jpg", # Buah
-    2: "https://i.pinimg.com/736x/2a/ba/4e/2aba4e49f667f8d008f3d7764615ca2b.jpg", # Profil
-    3: "https://i.pinimg.com/1200x/26/6d/f1/266df12a99563256886202bcf49fc45d.jpg", # Food/Hotpot
-    4: "https://i.pinimg.com/736x/97/e1/73/97e17378435b389a53a759b4379b309a.jpg", # Olahraga
-    5: "https://i.pinimg.com/736x/59/12/5f/59125f84abd307ca5da8d2718b11d53f.jpg"  # Dashboard
+    1: "https://i.pinimg.com/736x/01/5f/46/015f46ff9360f26910fcaf5fd7637aae.jpg", 
+    2: "https://i.pinimg.com/736x/2a/ba/4e/2aba4e49f667f8d008f3d7764615ca2b.jpg", 
+    3: "https://i.pinimg.com/1200x/26/6d/f1/266df12a99563256886202bcf49fc45d.jpg", 
+    4: "https://i.pinimg.com/736x/97/e1/73/97e17378435b389a53a759b4379b309a.jpg", 
+    5: "https://i.pinimg.com/736x/59/12/5f/59125f84abd307ca5da8d2718b11d53f.jpg"
 }
 
 current_bg = bg_images.get(st.session_state.step, bg_images[1])
 
-# --- CSS CUSTOM (BACKGROUND & JUDUL RESPONSIVE) ---
+# --- CSS CUSTOM (RESPONSIVE) ---
 st.markdown(f"""
 <style>
 .stApp {{
@@ -44,9 +46,10 @@ st.markdown(f"""
     font-weight: bold;
     border: 4px dashed white; 
     margin-bottom: 20px;
-    /* Font size otomatis mengecil di HP */
-    font-size: clamp(24px, 8vw, 45px);
+    /* Font size mengecil di HP, membesar di Laptop */
+    font-size: clamp(20px, 8vw, 45px);
     line-height: 1.2;
+    word-wrap: break-word;
 }}
 .stButton>button {{
     width: 100%; 
@@ -60,7 +63,7 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# --- DATA MAKANAN ---
+# --- DATA MAKANAN (LENGKAP) ---
 foods = [
     {"name": "Nasi Putih", "cal": 175, "unit": "Porsi", "cat": "Makanan", "category": "Karbohidrat"},
     {"name": "Nasi Merah", "cal": 165, "unit": "Porsi", "cat": "Makanan", "category": "Karbohidrat"},
@@ -132,6 +135,7 @@ foods = [
     {"name": "Jus Buah Naga Mix Stroberi", "cal": 110, "unit": "Gelas", "cat": "Minuman", "category": "Jus Mix"},
 ]
 
+# --- DATA OLAHRAGA (LENGKAP) ---
 exercises = [
     {"name": "Tidak Olahraga", "burn_rate": 0},
     {"name": "Angkat Beban (30 mnt)", "burn_rate": 150},
@@ -146,16 +150,15 @@ exercises = [
 ]
 
 # --- LOGIKA APLIKASI ---
-
 if st.session_state.step == 1:
     st.markdown('<div class="big-title">🎀 Calorie Tracker 🎀</div>', unsafe_allow_html=True)
-    st.markdown("<h2 style='text-align: center;'>Selamat Datang ✨</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center;'>Halo! Selamat Datang ✨</h2>", unsafe_allow_html=True)
     if st.button("Mulai Sekarang 🚀"):
         st.session_state.step = 2
         st.rerun()
 
 elif st.session_state.step == 2:
-    st.header("👤 Profil & Data Diri")
+    st.markdown('<div class="big-title">👤 Profil & Data Diri</div>', unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
         gender = st.selectbox("Jenis Kelamin", ["Perempuan", "Laki-laki"])
@@ -172,7 +175,7 @@ elif st.session_state.step == 2:
         st.rerun()
 
 elif st.session_state.step == 3:
-    st.header("📔 Food Diary")
+    st.markdown('<div class="big-title">📔 Food Diary</div>', unsafe_allow_html=True)
     waktu = st.selectbox("Waktu Makan", ["Sarapan", "Makan Siang", "Makan Malam", "Cemilan"])
     kat = st.radio("Kategori", ["Makanan", "Minuman"], horizontal=True)
     pilihan = st.selectbox(f"Pilih {kat}", sorted([f["name"] for f in foods if f["cat"] == kat]))
@@ -182,13 +185,12 @@ elif st.session_state.step == 3:
     if st.button("➕ Tambah Makanan"):
         st.session_state.diary.append({"time": waktu, "name": pilihan, "cal": item["cal"] * porsi})
         st.success(f"{pilihan} Berhasil dicatat!")
-
     if st.button("Lanjut ke Aktivitas 🏃"):
         st.session_state.step = 4
         st.rerun()
 
 elif st.session_state.step == 4:
-    st.header("🏃 Aktivitas")
+    st.markdown('<div class="big-title">🏃 Aktivitas</div>', unsafe_allow_html=True)
     pilihan_ex = st.selectbox("Pilih Olahraga", [ex["name"] for ex in exercises])
     burn = 0
     if pilihan_ex != "Tidak Olahraga":
@@ -203,7 +205,7 @@ elif st.session_state.step == 4:
         st.rerun()
 
 elif st.session_state.step == 5:
-    st.header("📊 Dashboard Hasil")
+    st.markdown('<div class="big-title">📊 Dashboard Hasil</div>', unsafe_allow_html=True)
     total_in = sum(item['cal'] for item in st.session_state.diary)
     total_out = sum(item['burn'] for item in st.session_state.exercise)
     remaining = st.session_state.target - (total_in - total_out)
